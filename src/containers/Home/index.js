@@ -1,14 +1,13 @@
-import React, { Component } from "react";
-import Category from "./components/Category";
-import Headline from "./components/Headline";
+import React, { Component } from 'react';
 
-class Home extends Component {
+class index extends Component {
   render() {
-    return <div>
-      <Category></Category>
-      <Headline></Headline>
-    </div>;
+    return (
+      <div>
+        
+      </div>
+    );
   }
 }
 
-export default Home;
+export default index;
