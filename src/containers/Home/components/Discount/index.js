@@ -16,7 +16,7 @@ class Discount extends Component {
             return (
               <a key={item.id} className="discount__item" href={item.url}>
                 <div className="discount__itemPic">
-                  <img width="100%" height="100%" src={item.picture} />
+                  <img width="100%" height="100%" src={item.picture} alt="" />
                 </div>
                 <div className="discount__itemTitle">{item.shop}</div>
                 <div className="discount__itemPriceWrapper">
