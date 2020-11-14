@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
-import dataSource from './dataSource.json';
-import './style.css';
+import React, { Component } from "react";
+import "./style.css";
 
 class Discount extends Component {
   render() {
+    const { data } = this.props;
     return (
       <div className="discount">
         <a className="discount__header">
@@ -12,11 +12,11 @@ class Discount extends Component {
           <span className="discount__arrow" />
         </a>
         <div className="discount__content">
-          {dataSource.map((item, index) => {
+          {data.map((item, index) => {
             return (
-              <a key={item.id} className="discount__item" href={item.url}>
+              <a key={item.id} className="discount__item">
                 <div className="discount__itemPic">
-                  <img width="100%" height="100%" src={item.picture} alt="" />
+                  <img width="100%" height="100%" src={item.picture} />
                 </div>
                 <div className="discount__itemTitle">{item.shop}</div>
                 <div className="discount__itemPriceWrapper">
