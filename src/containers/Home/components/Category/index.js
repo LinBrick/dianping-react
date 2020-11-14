@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Slider from 'react-slick';
-import dataSource from './categories.json';
+import dataSource from './dataSource.json';
 import './style.css';
 
 class Category extends Component {
