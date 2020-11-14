@@ -12,3 +12,4 @@ const rootReducer = combineReducers({
   comments
 })
 
+export default rootReducer
