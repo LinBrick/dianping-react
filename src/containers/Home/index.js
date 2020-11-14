@@ -18,7 +18,6 @@ import {
 
 class Home extends Component {
   render() {
-    console.log(this.props)
     const {likes, discounts, pageCount} = this.props
     return (
       <div>
