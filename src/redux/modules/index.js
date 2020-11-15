@@ -3,7 +3,7 @@ import entities from "./entities";
 import home from "./home";
 import detail from "./detail";
 import app from "./app";
-import search from "./app";
+import search from "./search";
 
 
 //合并成根reducer
