@@ -1,10 +1,20 @@
-import createReducer from '../../../utils/createReducer';
+import createReducer from "../../../utils/createReducer";
 
-const schema = {
-  name: 'shops',
-  id: 'id'
+export const schema = {
+  name: "shops",
+  id: "id"
 };
 
 const reducer = createReducer(schema.name);
 
 export default reducer;
+
+// selectors
+export const getShopById = (state, id) => {
+  const shop = state.entities.shops[id];
+  return shop;
+};
+
+export const getProductById = (state, id) => {
+  return state.entities.products[id]
+}
