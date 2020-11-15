@@ -1,17 +1,18 @@
 import React, { Component } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import Header from "../../components/Header";
 import ProductOverview from "./components/ProductOverview";
 import ShopInfo from "./components/ShopInfo";
 import Detail from "./components/Detail";
 import Remark from "./components/Remark";
 import BuyButton from "./components/BuyButton";
+import Header from "../../components/Header";
 import {
   actions as detailActions,
   getProduct,
-  getRelatedShop,
+  getRelatedShop
 } from "../../redux/modules/detail";
+
 
 class ProductDetail extends Component {
   render() {
@@ -20,12 +21,28 @@ class ProductDetail extends Component {
       <div>
         <Header title="团购详情" onBack={this.handleBack} grey />
         {product && <ProductOverview data={product} />}
-        {relatedShop && <ShopInfo data={relatedShop} total={product.shopIds.length} />}
-        {product && <Detail data={product} />}
-        {product && <Remark data={product} />}
-        {product && <BuyButton productId={product.id}/>}
+        {relatedShop && (
+          <ShopInfo data={relatedShop} total={product.shopIds.length} />
+        )}
+        {product && (
+          <div>
+            <Detail data={product} />
+            <Remark data={product} />
+            <BuyButton productId={product.id} />
+          </div>
+        )}
       </div>
     );
+  }
+
+  componentDidMount() {
+    const { product } = this.props;
+    if (!product) {
+      const productId = this.props.match.params.id;
+      this.props.detailActions.loadProductDetail(productId);
+    } else if (!this.props.relatedShop) {
+      this.props.detailActions.loadShopById(product.nearestShop);
+    }
   }
 
   componentDidUpdate(preProps) {
@@ -44,14 +61,17 @@ const mapStateToProps = (state, props) => {
   const productId = props.match.params.id;
   return {
     product: getProduct(state, productId),
-    relatedShop: getRelatedShop(state, productId),
+    relatedShop: getRelatedShop(state, productId)
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
-    detailActions: bindActionCreators(detailActions, dispatch),
+    detailActions: bindActionCreators(detailActions, dispatch)
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProductDetail);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ProductDetail);
