@@ -1,6 +1,7 @@
 import url from "../../utils/url";
 import { FETCH_DATA } from "../middleware/api";
-import { schema as keywordSchema } from "./entities/keywords";
+import { schema as keywordSchema, getKeywordById } from "./entities/keywords";
+import { combineReducers } from "redux"
 
 export const types = {
   //获取热门关键词
@@ -16,14 +17,14 @@ export const types = {
   CLEAR_INPUT_TEXT: "SEARCH/CLEAR_INPUT_TEXT",
   // 历史查询记录
   ADD_HISTORY_KEYWORD: "SEARCH/ADD_HISTORY_KEYWORD",
-  CLEAR_HISTORY_KEYWORDS: "SEARCH/CLEAR_HISTORY_KEYWORDS",
+  CLEAR_HISTORY_KEYWORDS: "SEARCH/CLEAR_HISTORY_KEYWORDS"
 };
 
 const initialState = {
   inputText: "",
   popularKeywords: {
     isFetching: false,
-    ids: [],
+    ids: []
   },
   /**
    * relatedKeywords对象结构：
@@ -35,23 +36,25 @@ const initialState = {
    * }
    */
   relatedKeywords: {},
-  historyKeywords: [], //保存关键词id
+  historyKeywords: [] //保存关键词id
 };
 
 export const actions = {
   //获取热门关键词
   loadPopularKeywords: () => {
     return (dispatch, getState) => {
-      const { ids } = getState().popularKeywords;
-      if (ids.length) return null;
+      const { ids } = getState().search.popularKeywords;
+      if (ids.length > 0) {
+        return null;
+      }
       const endpoint = url.getPopularKeywords();
-      return dispatch(fetchPopularKeyWords(endpoint));
+      return dispatch(fetchPopularKeywords(endpoint));
     };
   },
   // 根据输入获取相关关键词
-  loadRelatedKeywords: (text) => {
+  loadRelatedKeywords: text => {
     return (dispatch, getState) => {
-      const { relatedKeywords } = getState.search;
+      const { relatedKeywords } = getState().search;
       if (relatedKeywords[text]) {
         return null;
       }
@@ -60,33 +63,33 @@ export const actions = {
     };
   },
   //搜索框输入文本相关action
-  setInputText: (text) => ({
+  setInputText: text => ({
     type: types.SET_INPUT_TEXT,
-    text,
+    text
   }),
   clearInputText: () => ({
-    type: types.CLEAR_INPUT_TEXT,
+    type: types.CLEAR_INPUT_TEXT
   }),
   //历史查询记录相关action
-  addHistoryKeyword: (keywordId) => ({
+  addHistoryKeyword: keywordId => ({
     type: types.ADD_HISTORY_KEYWORD,
-    text: keywordId,
+    text: keywordId
   }),
   clearHistoryKeywords: () => ({
-    type: types.CLEAR_HISTORY_KEYWORDS,
-  }),
+    type: types.CLEAR_HISTORY_KEYWORDS
+  })
 };
 
-const fetchPopularKeywords = (endpoint) => ({
+const fetchPopularKeywords = endpoint => ({
   [FETCH_DATA]: {
     types: [
       types.FETCH_POPULAR_KEYWORDS_REQUEST,
       types.FETCH_POPULAR_KEYWORDS_SUCCESS,
-      types.FETCH_POPULAR_KEYWORDS_FAILURE,
+      types.FETCH_POPULAR_KEYWORDS_FAILURE
     ],
     endpoint,
-    schema: keywordSchema,
-  },
+    schema: keywordSchema
+  }
 });
 
 const fetchRelatedKeywords = (text, endpoint) => ({
@@ -94,12 +97,12 @@ const fetchRelatedKeywords = (text, endpoint) => ({
     types: [
       types.FETCH_RELATED_KEYWORDS_REQUEST,
       types.FETCH_RELATED_KEYWORDS_SUCCESS,
-      types.FETCH_RELATED_KEYWORDS_FAILURE,
+      types.FETCH_RELATED_KEYWORDS_FAILURE
     ],
     endpoint,
-    schema: keywordSchema,
+    schema: keywordSchema
   },
-  text,
+  text
 });
 
 // reducers
@@ -111,12 +114,12 @@ const popularKeywords = (state = initialState.popularKeywords, action) => {
       return {
         ...state,
         isFetching: false,
-        ids: state.ids.concat(action.response.ids),
+        ids: state.ids.concat(action.response.ids)
       };
     case types.FETCH_POPULAR_KEYWORDS_FAILURE:
       return {
         ...state,
-        isFetching: false,
+        isFetching: false
       };
     default:
       return state;
@@ -130,7 +133,7 @@ const relatedKeywords = (state = initialState.relatedKeywords, action) => {
     case types.FETCH_RELATED_KEYWORDS_FAILURE:
       return {
         ...state,
-        [action.text]: relatedKeywordsByText(state[action.text], action),
+        [action.text]: relatedKeywordsByText(state[action.text], action)
       };
     default:
       return state;
@@ -148,7 +151,7 @@ const relatedKeywordsByText = (
       return {
         ...state,
         isFetching: false,
-        ids: state.ids.concat(action.response.ids),
+        ids: state.ids.concat(action.response.ids)
       };
     case types.FETCH_RELATED_KEYWORDS_FAILURE:
       return { ...state, isFetching: false };
@@ -157,25 +160,26 @@ const relatedKeywordsByText = (
   }
 };
 
-const inputText = (state = initialState.inputText, action) => {
-  switch (action.type) {
+const inputText = (state = initialState.inputText, action) =>{
+  switch(action.type) {
     case types.SET_INPUT_TEXT:
-      return action.text;
+      return action.text
     case types.CLEAR_INPUT_TEXT:
-      return "";
+      return ""
     default:
-      return state;
+      return state
   }
-};
+}
 
 const historyKeywords = (state = initialState.historyKeywords, action) => {
-  switch (action.type) {
-    case types.ADD_HISTORY_KEYWORD:
-      const data = state.filter((item) => {
-        if (item !== action.text) {
+  switch(action.type) {
+    case types.ADD_HISTORY_KEYWORD: 
+      const data = state.filter(item => {
+        if(item !== action.text) {
           return true;
         }
-      });
+        return false;
+      })
       return [action.text, ...data];
     case types.CLEAR_HISTORY_KEYWORDS:
       return [];
@@ -188,7 +192,39 @@ const reducer = combineReducers({
   popularKeywords,
   relatedKeywords,
   inputText,
-  historyKeywords,
-});
+  historyKeywords
+})
 
 export default reducer;
+
+
+// selectors
+export const getPopularKeywords = state => {
+  return state.search.popularKeywords.ids.map(id => {
+    return getKeywordById(state, id)
+  })
+}
+
+export const getRelatedKeywords = state => {
+  const text = state.search.inputText;
+  if(!text || text.trim().length === 0) {
+    return [];
+  } 
+  const relatedKeywords = state.search.relatedKeywords[text];
+  if(!relatedKeywords) {
+    return []
+  }
+  return relatedKeywords.ids.map(id => {
+    return getKeywordById(state, id)
+  })
+}
+
+export const getInputText = state => {
+  return state.search.inputText
+}
+
+export const getHistoryKeywords = state => {
+  return state.search.historyKeywords.map(id => {
+    return getKeywordById(state, id)
+  })
+}
