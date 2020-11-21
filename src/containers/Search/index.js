@@ -67,11 +67,11 @@ class Search extends Component {
 
   // 处理点击关键词的逻辑
   handleClickItem = item => {
-    const { setInputText, addHistoryKeyword } = this.props.searchActions
+    const { setInputText, addHistoryKeyword, loadRelatedShops } = this.props.searchActions
     setInputText(item.keyword)
     addHistoryKeyword(item.id)
-    // 跳转搜索结果页逻辑 todo
-    this.props.history.push('/search_result')
+    loadRelatedShops(item.id)
+    this.props.history.push("/search_result")
   }
 
   // 清除历史记录
