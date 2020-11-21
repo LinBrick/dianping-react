@@ -1,25 +1,26 @@
 import React, { Component } from "react";
 import { bindActionCreators } from "redux";
-import { BrowserRouter as Router, Route, Switch} from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { connect } from "react-redux";
 import ErrorToast from "../../components/ErrorToast";
 import { actions as appActions, getError } from "../../redux/modules/app";
-import Home from '../Home'
-import ProductDetail from '../ProductDetail'
-import Search from '../Search'
-import SearchResult from '../SearchResult'
-
+import Home from "../Home";
+import ProductDetail from "../ProductDetail";
+import Search from "../Search";
+import SearchResult from "../SearchResult";
+import Login from "../Login";
 
 class App extends Component {
   render() {
     const {
       error,
-      appActions: { clearError }
+      appActions: { clearError },
     } = this.props;
     return (
       <div className="App">
         <Router>
           <Switch>
+            <Route path="/login" component={Login} />
             <Route path="/search" component={Search} />
             <Route path="/search_result" component={SearchResult} />
             <Route path="/detail/:id" component={ProductDetail} />
@@ -34,17 +35,14 @@ class App extends Component {
 
 const mapStateToProps = (state, props) => {
   return {
-    error: getError(state)
+    error: getError(state),
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    appActions: bindActionCreators(appActions, dispatch)
+    appActions: bindActionCreators(appActions, dispatch),
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);
